@@ -12,7 +12,7 @@
 
 loop(State) ->
   receive
-    {Client, kill}      -> Client ! ok, loop(maps:new());
+    {Client, kill}      -> Client ! ok, exit(self());
     {Client, set, K, V} -> Client ! ok, loop(maps:put(K, V, State));
     {Client, del, K}    -> Client ! ok, loop(maps:remove(K, State));
     {Client, get, K} ->
