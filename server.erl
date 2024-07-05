@@ -4,19 +4,17 @@
 -export([connect/0, calculate/2]).
 -define(LIMIT, 100).
 
-foldr1(Fn, [H | T]) -> lists:foldr(Fn, H, T).
+foldl1(Fn, [H | T]) -> lists:foldl(Fn, H, T).
 
 evaluate({add, Args}) -> lists:foldl(recursive(fun (A, B) -> A + B end), 0, Args);
 evaluate({mul, Args}) -> lists:foldl(recursive(fun (A, B) -> A * B end), 1, Args);
-
-evaluate({sub, Args}) -> foldr1(recursive(fun (B, A) -> A - B end), Args);
-
+evaluate({sub, Args}) -> foldl1(recursive(fun (A, B) -> A - B end), Args);
 evaluate({'div', Args}) ->
-  foldr1(
-    recursive(fun (B, A) -> case B of 0 -> {error, division_by_zero}; _ -> A / B end end),
+  foldl1(
+    recursive(fun (A, B) -> case B of 0 -> {error, division_by_zero}; _ -> A / B end end),
     Args);
 
-evaluate(_) -> {error, "unkown operation"}.
+evaluate(_) -> {error, unknown_operation}.
 
 calc(P) when is_number(P) -> P;
 calc(P) when is_tuple(P) -> evaluate(P).
